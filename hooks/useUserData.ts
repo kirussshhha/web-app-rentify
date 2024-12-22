@@ -5,8 +5,15 @@ import { useEffect } from "react";
 const supabase = createClient();
 
 export function useUserData() {
-  const { user, setUser, setItems, setOrders, setReviews, clearUser } =
-    useUserStore();
+  const {
+    user,
+    setUser,
+    setItems,
+    setOrders,
+    setReviews,
+    setItemImages,
+    clearUser,
+  } = useUserStore();
 
   const fetchUser = async () => {
     try {
@@ -88,14 +95,36 @@ export function useUserData() {
     }
   };
 
+  const fetchItemImages = async () => {
+    try {
+      const { data: images, error: imagesError } = await supabase
+        .from("item_images")
+        .select("*");
+
+      if (imagesError) {
+        console.error("Error fetching reviews:", images);
+        return;
+      }
+      setItemImages(images || []);
+      console.log("images", images);
+    } catch (error) {
+      console.error("Unexpected error in fetchImages:", error);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       await fetchUser();
-      await Promise.all([fetchItems(), fetchOrders(), fetchReviews()]);
+      await Promise.all([
+        fetchItems(),
+        fetchOrders(),
+        fetchReviews(),
+        fetchItemImages(),
+      ]);
     };
 
     fetchData();
 
     return () => clearUser();
-  }, [setUser, setItems, setOrders, setReviews, clearUser]);
+  }, [setUser, setItems, setOrders, setReviews, setItemImages, clearUser]);
 }

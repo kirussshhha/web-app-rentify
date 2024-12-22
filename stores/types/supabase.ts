@@ -34,6 +34,32 @@ export type Database = {
   }
   public: {
     Tables: {
+      item_images: {
+        Row: {
+          id: string
+          image_url: string | null
+          items_id: string | null
+        }
+        Insert: {
+          id?: string
+          image_url?: string | null
+          items_id?: string | null
+        }
+        Update: {
+          id?: string
+          image_url?: string | null
+          items_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "item_images_items_id_fkey"
+            columns: ["items_id"]
+            isOneToOne: false
+            referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       items: {
         Row: {
           availability: boolean

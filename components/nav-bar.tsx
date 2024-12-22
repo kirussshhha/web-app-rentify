@@ -6,6 +6,7 @@ import {
   Button,
   Input,
 } from "@nextui-org/react";
+import { signOutAction } from "@/app/actions";
 
 export const RentifyLogo = () => {
   return (
@@ -34,6 +35,7 @@ export default function NavBar() {
           </Link>
           <button className="text-sm">Локейшн</button>
           <button className="text-sm">Фильтр</button>
+          <button onClick={signOutAction}>logout</button>
         </div>
 
         <div className="flex gap-4">
