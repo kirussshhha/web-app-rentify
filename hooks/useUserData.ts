@@ -9,9 +9,10 @@ export function useUserData() {
     user,
     setUser,
     setItems,
-    setOrders,
     setReviews,
     setItemImages,
+    setCategories,
+    setSubCategories,
     clearUser,
   } = useUserStore();
 
@@ -61,23 +62,6 @@ export function useUserData() {
     }
   };
 
-  const fetchOrders = async () => {
-    try {
-      const { data: orders, error: ordersError } = await supabase
-        .from("orders")
-        .select("*");
-
-      if (ordersError) {
-        console.error("Error fetching orders:", ordersError);
-        return;
-      }
-      setOrders(orders || []);
-      console.log("Orders", orders);
-    } catch (error) {
-      console.error("Unexpected error in fetchOrders:", error);
-    }
-  };
-
   const fetchReviews = async () => {
     try {
       const { data: reviews, error: reviewsError } = await supabase
@@ -102,7 +86,7 @@ export function useUserData() {
         .select("*");
 
       if (imagesError) {
-        console.error("Error fetching reviews:", images);
+        console.error("Error fetching images:", images);
         return;
       }
       setItemImages(images || []);
@@ -112,19 +96,54 @@ export function useUserData() {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const { data: categories, error: categoriesError } = await supabase
+        .from("categories")
+        .select("*");
+
+      if (categoriesError) {
+        console.error("Error fetching categories:", categories);
+        return;
+      }
+      setCategories(categories || []);
+      console.log("categories", categories);
+    } catch (error) {
+      console.error("Unexpected error in fetchCategories:", error);
+    }
+  };
+
+  const fetchSubCategories = async () => {
+    try {
+      const { data: subCategories, error: subCategoriesError } = await supabase
+        .from("subcategories")
+        .select("*");
+
+      if (subCategoriesError) {
+        console.error("Error fetching subCategories:", subCategories);
+        return;
+      }
+      setSubCategories(subCategories || []);
+      console.log("subCategories", subCategories);
+    } catch (error) {
+      console.error("Unexpected error in fetchSubCategories:", error);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       await fetchUser();
       await Promise.all([
         fetchItems(),
-        fetchOrders(),
         fetchReviews(),
         fetchItemImages(),
+        fetchCategories(),
+        fetchSubCategories(),
       ]);
     };
 
     fetchData();
 
     return () => clearUser();
-  }, [setUser, setItems, setOrders, setReviews, setItemImages, clearUser]);
+  }, [setUser, setItems, setReviews, setItemImages, setCategories, setSubCategories, clearUser]);
 }

@@ -10,10 +10,18 @@ type ItemProps = {
 };
 
 export const Item: React.FC<ItemProps> = ({ item }) => {
-  const { item_images } = useUserStore();
+  const { item_images, categories, subCategories } = useUserStore();
 
   const images = item_images.filter((image) => image.items_id === item.id);
   const firstImage = images.length > 0 ? images[0].image_url : "";
+
+  const itemCategory = categories.find(
+    (category) => category.id === item.category_id
+  );
+
+  const itemSubCategory = subCategories.find(
+    (subCategory) => subCategory.id === item.subcategory_id
+  );
 
   const isAvailability = item.availability;
 
@@ -24,6 +32,11 @@ export const Item: React.FC<ItemProps> = ({ item }) => {
       year: "numeric",
       ...options,
     });
+
+  const capitalizeFirstLetter = (str: string) => {
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
 
   return (
     <div>
@@ -40,6 +53,7 @@ export const Item: React.FC<ItemProps> = ({ item }) => {
               objectFit="cover"
               objectPosition="center"
               className="rounded-lg"
+              loading="lazy"
             />
           ) : (
             <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
@@ -61,7 +75,10 @@ export const Item: React.FC<ItemProps> = ({ item }) => {
             </Chip>
           </div>
           <p className="font-bold text-sm text-gray-700">{item.name}</p>
-          <p className="text-sm text-gray-500">{item.category}</p>
+          <p className="text-sm text-gray-500">
+            {capitalizeFirstLetter(itemCategory?.name || "")},{" "}
+            {itemSubCategory?.sub_name}
+          </p>
           <p className="text-sm text-gray-500">
             {item.created_at
               ? formatDate(new Date(item.created_at))

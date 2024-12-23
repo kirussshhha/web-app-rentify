@@ -34,6 +34,21 @@ export type Database = {
   }
   public: {
     Tables: {
+      categories: {
+        Row: {
+          id: string
+          name: string | null
+        }
+        Insert: {
+          id?: string
+          name?: string | null
+        }
+        Update: {
+          id?: string
+          name?: string | null
+        }
+        Relationships: []
+      }
       item_images: {
         Row: {
           id: string
@@ -63,76 +78,53 @@ export type Database = {
       items: {
         Row: {
           availability: boolean
-          category: string | null
+          category_id: string | null
           created_at: string | null
           description: string | null
           id: string
           name: string
           owner: string | null
           price_per_day: number
+          subcategory_id: string | null
           updated_at: string | null
         }
         Insert: {
           availability: boolean
-          category?: string | null
+          category_id?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
           name: string
           owner?: string | null
           price_per_day: number
+          subcategory_id?: string | null
           updated_at?: string | null
         }
         Update: {
           availability?: boolean
-          category?: string | null
+          category_id?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
           name?: string
           owner?: string | null
           price_per_day?: number
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      orders: {
-        Row: {
-          count_of_days: number
-          created_at: string | null
-          id: number
-          item_id: string | null
-          renter_id: string | null
-          status: string | null
-          total_price: number
-          updated_at: string | null
-        }
-        Insert: {
-          count_of_days: number
-          created_at?: string | null
-          id?: number
-          item_id?: string | null
-          renter_id?: string | null
-          status?: string | null
-          total_price: number
-          updated_at?: string | null
-        }
-        Update: {
-          count_of_days?: number
-          created_at?: string | null
-          id?: number
-          item_id?: string | null
-          renter_id?: string | null
-          status?: string | null
-          total_price?: number
+          subcategory_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "orders_item_id_fkey"
-            columns: ["item_id"]
+            foreignKeyName: "items_category_id_fkey"
+            columns: ["category_id"]
             isOneToOne: false
-            referencedRelation: "items"
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "items_subcategory_id_fkey"
+            columns: ["subcategory_id"]
+            isOneToOne: false
+            referencedRelation: "subcategories"
             referencedColumns: ["id"]
           },
         ]
@@ -171,6 +163,32 @@ export type Database = {
             columns: ["item_id"]
             isOneToOne: false
             referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subcategories: {
+        Row: {
+          category_id: string | null
+          id: string
+          sub_name: string | null
+        }
+        Insert: {
+          category_id?: string | null
+          id?: string
+          sub_name?: string | null
+        }
+        Update: {
+          category_id?: string | null
+          id?: string
+          sub_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subcategories_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
             referencedColumns: ["id"]
           },
         ]

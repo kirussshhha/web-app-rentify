@@ -35,11 +35,11 @@ export async function updateSession(request: NextRequest) {
     !user &&
     !request.nextUrl.pathname.startsWith('/login') &&
     !request.nextUrl.pathname.startsWith('/auth') &&
-    !request.nextUrl.pathname.startsWith('/signup')  // Добавляем условие для /signup
+    !request.nextUrl.pathname.startsWith('/')  // Добавляем условие для /signup
   ) {
     // Если нет пользователя, и путь не является login, auth или signup, перенаправляем на /login
     const url = request.nextUrl.clone()
-    url.pathname = '/login'
+    url.pathname = '/'
     return NextResponse.redirect(url)
   }
 

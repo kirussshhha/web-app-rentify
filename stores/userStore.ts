@@ -3,24 +3,31 @@ import { create } from "zustand";
 import { User } from "@supabase/auth-js";
 
 type Items = Database["public"]["Tables"]["items"]["Row"];
-type Orders = Database["public"]["Tables"]["orders"]["Row"];
 type Reviews = Database["public"]["Tables"]["reviews"]["Row"];
 type Item_images = Database["public"]["Tables"]["item_images"]["Row"];
+type Categories = Database["public"]["Tables"]["categories"]["Row"];
+type Subcategories = Database["public"]["Tables"]["subcategories"]["Row"];
 
 interface UserState {
   user: User | null;
   items: Items[];
-  orders: Orders[];
   reviews: Reviews[];
   item_images: Item_images[];
+  categories: Categories[];
+  subCategories: Subcategories[];
   setUser: (user: User) => void;
   setItems: (updater: Items[] | ((prevItems: Items[]) => Items[])) => void;
-  setOrders: (updater: Orders[] | ((prevItems: Orders[]) => Orders[])) => void;
   setReviews: (
     updater: Reviews[] | ((prevItems: Reviews[]) => Reviews[])
   ) => void;
   setItemImages: (
     updater: Item_images[] | ((prevItems: Item_images[]) => Item_images[])
+  ) => void;
+  setCategories: (
+    updater: Categories[] | ((prevItems: Categories[]) => Categories[])
+  ) => void;
+  setSubCategories: (
+    updater: Subcategories[] | ((prevItems: Subcategories[]) => Subcategories[])
   ) => void;
   clearUser: () => void;
 }
@@ -31,14 +38,12 @@ const useUserStore = create<UserState>((set) => ({
   orders: [],
   reviews: [],
   item_images: [],
+  categories: [],
+  subCategories: [],
   setUser: (user) => set({ user }),
   setItems: (updater: Items[] | ((prevMetrics: Items[]) => Items[])) =>
     set((state) => ({
       items: typeof updater === "function" ? updater(state.items) : updater,
-    })),
-  setOrders: (updater: Orders[] | ((prevMetrics: Orders[]) => Orders[])) =>
-    set((state) => ({
-      orders: typeof updater === "function" ? updater(state.orders) : updater,
     })),
   setReviews: (updater: Reviews[] | ((prevMetrics: Reviews[]) => Reviews[])) =>
     set((state) => ({
@@ -51,8 +56,31 @@ const useUserStore = create<UserState>((set) => ({
       item_images:
         typeof updater === "function" ? updater(state.item_images) : updater,
     })),
+  setCategories: (
+    updater: Categories[] | ((prevMetrics: Categories[]) => Categories[])
+  ) =>
+    set((state) => ({
+      categories:
+        typeof updater === "function" ? updater(state.categories) : updater,
+    })),
+  setSubCategories: (
+    updater:
+      | Subcategories[]
+      | ((prevMetrics: Subcategories[]) => Subcategories[])
+  ) =>
+    set((state) => ({
+      subCategories:
+        typeof updater === "function" ? updater(state.subCategories) : updater,
+    })),
   clearUser: () =>
-    set({ user: null, items: [], orders: [], reviews: [], item_images: [] }),
+    set({
+      user: null,
+      items: [],
+      reviews: [],
+      item_images: [],
+      categories: [],
+      subCategories: [],
+    }),
 }));
 
 export default useUserStore;

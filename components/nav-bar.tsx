@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   Navbar,
   NavbarBrand,
@@ -5,8 +6,13 @@ import {
   Link,
   Button,
   Input,
+  NavbarMenu,
+  NavbarMenuItem,
+  NavbarMenuToggle,
 } from "@nextui-org/react";
 import { signOutAction } from "@/app/actions";
+import { createClient } from "@/utils/supabase/client";
+import { User } from "@supabase/auth-js";
 
 export const RentifyLogo = () => {
   return (
@@ -26,16 +32,29 @@ export const RentifyLogo = () => {
 };
 
 export default function NavBar() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const supabase = await createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+    };
+
+    fetchUser();
+  }, []);
+
   return (
     <>
-      <div className="w-full flex justify-between items-center px-7 max-w-5xl mt-3 mx-auto">
+      <div className="w-full justify-between items-center px-7 max-w-5xl mt-3 mx-auto hidden sm:flex">
         <div className="font-roboto flex gap-4">
           <Link href="#" color="foreground" className="text-sm">
             О нас
           </Link>
-          <button className="text-sm">Локейшн</button>
           <button className="text-sm">Фильтр</button>
-          <button onClick={signOutAction}>logout</button>
         </div>
 
         <div className="flex gap-4">
@@ -52,48 +71,105 @@ export default function NavBar() {
             </svg>
             Разместить объявление
           </button>
-          <button className="text-sm flex items-center gap-1">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              className="bi bi-lock"
-              viewBox="0 0 16 16"
-            >
-              <rect x="4" y="8" width="8" height="6" rx="1" />
-              <path d="M5 8V5a3 3 0 0 1 6 0v3" />
-            </svg>
-            Вход и регистрация
-          </button>
+          {user ? (
+            <form action={signOutAction}>
+              <button className="text-sm flex items-center gap-1">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="bi bi-lock"
+                  viewBox="0 0 16 16"
+                >
+                  <rect x="4" y="8" width="8" height="6" rx="1" />
+                  <path d="M5 8V5a3 3 0 0 1 6 0v3" />
+                </svg>
+                Выйти
+              </button>
+            </form>
+          ) : (
+            <button className="text-sm flex items-center gap-1">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="bi bi-lock"
+                viewBox="0 0 16 16"
+              >
+                <rect x="4" y="8" width="8" height="6" rx="1" />
+                <path d="M5 8V5a3 3 0 0 1 6 0v3" />
+              </svg>
+              <Link href="/login">Вход и регистрация</Link>
+            </button>
+          )}
         </div>
       </div>
 
-      <Navbar isBordered>
+      <Navbar isBordered isBlurred={false} onMenuOpenChange={setIsMenuOpen}>
+        <NavbarMenuToggle
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          className="sm:hidden"
+        />
         <NavbarContent justify="start">
           <NavbarBrand>
             <Link href="/" color="foreground">
               <RentifyLogo />
-              <p className="font-bold text-inherit text-lg ml-2">Rentify</p>
+              <p className="font-bold text-inherit text-lg ml-2 hidden sm:flex">
+                Rentify
+              </p>
             </Link>
           </NavbarBrand>
         </NavbarContent>
 
-        <NavbarContent justify="center" className="hidden md:flex">
+        <NavbarContent justify="center">
           <Input
             placeholder="Искать объявления"
-            className="w-72"
+            className="flex-grow w-full md:w-72"
             variant="flat"
             aria-label="Search"
           />
           <Button color="secondary">Найти</Button>
         </NavbarContent>
 
-        <NavbarContent justify="end">
+        <NavbarContent justify="end" className="hidden md:flex">
           <Button color="secondary">Категории</Button>
         </NavbarContent>
+
+        <NavbarMenu>
+          <NavbarMenuItem>
+            <button>Разместить объявление</button>
+          </NavbarMenuItem>
+          <NavbarMenuItem>
+            <button className="w-full text-left">Категории</button>
+          </NavbarMenuItem>
+          <NavbarMenuItem>
+            <button className="w-full text-left">Фильтр</button>
+          </NavbarMenuItem>
+          <NavbarMenuItem>
+            <Link href="#" color="foreground" className="text-md">
+              О нас
+            </Link>
+          </NavbarMenuItem>
+          <NavbarMenuItem>
+            {user ? (
+              <form action={signOutAction}>
+                <button className="text-sm flex items-center gap-1">
+                  Выйти
+                </button>
+              </form>
+            ) : (
+              <button className="text-sm flex items-center gap-1">
+                <Link href="/login">Вход и регистрация</Link>
+              </button>
+            )}
+          </NavbarMenuItem>
+        </NavbarMenu>
       </Navbar>
     </>
   );

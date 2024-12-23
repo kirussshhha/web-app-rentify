@@ -22,7 +22,7 @@ export async function login(formData: FormData) {
     redirect("/error");
   }
 
-  redirect("/protected");
+  redirect("/");
 }
 
 export async function signup(formData: FormData) {
@@ -44,12 +44,12 @@ export async function signup(formData: FormData) {
     redirect("/error");
   }
 
-  redirect("/login");
+  redirect("/");
 }
 
 export const signOutAction = async () => {
 	const supabase = await createClient()
 	await supabase.auth.signOut()
-	return redirect('/login')
+	return redirect('/')
 }
 
