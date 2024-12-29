@@ -10,9 +10,9 @@ import {
   NavbarMenuItem,
   NavbarMenuToggle,
 } from "@nextui-org/react";
-import { signOutAction } from "@/app/actions";
+import LoginModal from "./loginModal";
+import useUserStore from "@/stores/useUserStore";
 import { createClient } from "@/utils/supabase/client";
-import { User } from "@supabase/auth-js";
 
 export const RentifyLogo = () => {
   return (
@@ -33,23 +33,29 @@ export const RentifyLogo = () => {
 
 export default function NavBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const { user, fetchUser, clearUser } = useUserStore();
+  const supabase = createClient();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const supabase = await createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
+    const loadData = async () => {
+      try {
+        await fetchUser();
+      } catch (error) {
+        console.error("ошибка при загрузке", error);
+      }
     };
 
-    fetchUser();
-  }, []);
+    loadData();
+  }, [user, fetchUser]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    clearUser();
+  };
 
   return (
     <>
-      <div className="w-full justify-between items-center px-7 max-w-5xl mt-3 mx-auto hidden sm:flex">
+      <div className="w-full justify-between items-center px-7 max-w-5xl mx-auto mt-2 hidden sm:flex">
         <div className="font-roboto flex gap-4">
           <Link href="#" color="foreground" className="text-sm">
             О нас
@@ -72,7 +78,7 @@ export default function NavBar() {
             Разместить объявление
           </button>
           {user ? (
-            <form action={signOutAction}>
+            <form action={handleLogout}>
               <button className="text-sm flex items-center gap-1">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -91,22 +97,7 @@ export default function NavBar() {
               </button>
             </form>
           ) : (
-            <button className="text-sm flex items-center gap-1">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                className="bi bi-lock"
-                viewBox="0 0 16 16"
-              >
-                <rect x="4" y="8" width="8" height="6" rx="1" />
-                <path d="M5 8V5a3 3 0 0 1 6 0v3" />
-              </svg>
-              <Link href="/login">Вход и регистрация</Link>
-            </button>
+            <LoginModal />
           )}
         </div>
       </div>
@@ -158,15 +149,15 @@ export default function NavBar() {
           </NavbarMenuItem>
           <NavbarMenuItem>
             {user ? (
-              <form action={signOutAction}>
+              <form action={handleLogout}>
                 <button className="text-sm flex items-center gap-1">
                   Выйти
                 </button>
               </form>
             ) : (
-              <button className="text-sm flex items-center gap-1">
-                <Link href="/login">Вход и регистрация</Link>
-              </button>
+              <Link href="/login" color="foreground" className="text-sm">
+                Вход и регистрация
+              </Link>
             )}
           </NavbarMenuItem>
         </NavbarMenu>

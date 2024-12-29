@@ -1,28 +1,24 @@
 import { Database } from "@/stores/types/supabase";
-import useUserStore from "@/stores/userStore";
 import { Card, CardHeader, Chip } from "@nextui-org/react";
 import Image from "next/image";
 
 type Item = Database["public"]["Tables"]["items"]["Row"];
+type Categories = Database["public"]["Tables"]["categories"]["Row"];
+type SubCategories = Database["public"]["Tables"]["subcategories"]["Row"];
 
 type ItemProps = {
   item: Item;
+  itemCategory: Categories;
+  itemSubCategory?: SubCategories;
+  itemImages: string | null;
 };
 
-export const Item: React.FC<ItemProps> = ({ item }) => {
-  const { item_images, categories, subCategories } = useUserStore();
-
-  const images = item_images.filter((image) => image.items_id === item.id);
-  const firstImage = images.length > 0 ? images[0].image_url : "";
-
-  const itemCategory = categories.find(
-    (category) => category.id === item.category_id
-  );
-
-  const itemSubCategory = subCategories.find(
-    (subCategory) => subCategory.id === item.subcategory_id
-  );
-
+export const Item: React.FC<ItemProps> = ({
+  item,
+  itemCategory,
+  itemSubCategory,
+  itemImages,
+}) => {
   const isAvailability = item.availability;
 
   const formatDate = (date: Date, options = {}) =>
@@ -45,10 +41,10 @@ export const Item: React.FC<ItemProps> = ({ item }) => {
           className="p-0 relative"
           style={{ width: 240, height: 240 }}
         >
-          {firstImage ? (
+          {itemImages ? (
             <Image
               alt="Item image"
-              src={firstImage}
+              src={itemImages}
               layout="fill"
               objectFit="cover"
               objectPosition="center"
@@ -76,7 +72,7 @@ export const Item: React.FC<ItemProps> = ({ item }) => {
           </div>
           <p className="font-bold text-sm text-gray-700">{item.name}</p>
           <p className="text-sm text-gray-500">
-            {capitalizeFirstLetter(itemCategory?.name || "")},{" "}
+            {capitalizeFirstLetter(itemCategory.name || "")},{" "}
             {itemSubCategory?.sub_name}
           </p>
           <p className="text-sm text-gray-500">
