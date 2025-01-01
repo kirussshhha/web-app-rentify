@@ -1,7 +1,7 @@
 "use client";
 
-import NavBar from "@/components/nav-bar";
-import ItemList from "@/components/item-list";
+import NavBar from "@/components/organisms/navbar";
+import ItemList from "@/components/organisms/itemList";
 
 export default function Home() {
   return (

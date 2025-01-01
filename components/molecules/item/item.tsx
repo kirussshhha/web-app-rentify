@@ -1,38 +1,15 @@
-import { Database } from "@/stores/types/supabase";
 import { Card, CardHeader, Chip } from "@nextui-org/react";
 import Image from "next/image";
+import { ItemProps } from "./types";
+import { capitalizeFirstLetter, formatDate } from "@/utils/utils";
 
-type Item = Database["public"]["Tables"]["items"]["Row"];
-type Categories = Database["public"]["Tables"]["categories"]["Row"];
-type SubCategories = Database["public"]["Tables"]["subcategories"]["Row"];
-
-type ItemProps = {
-  item: Item;
-  itemCategory: Categories;
-  itemSubCategory?: SubCategories;
-  itemImages: string | null;
-};
-
-export const Item: React.FC<ItemProps> = ({
+const Item: React.FC<ItemProps> = ({
   item,
   itemCategory,
   itemSubCategory,
   itemImages,
 }) => {
   const isAvailability = item.availability;
-
-  const formatDate = (date: Date, options = {}) =>
-    date.toLocaleDateString("ru-RU", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-      ...options,
-    });
-
-  const capitalizeFirstLetter = (str: string) => {
-    if (!str) return "";
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  };
 
   return (
     <div>
@@ -85,3 +62,5 @@ export const Item: React.FC<ItemProps> = ({
     </div>
   );
 };
+
+export default Item;

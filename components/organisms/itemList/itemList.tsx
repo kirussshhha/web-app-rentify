@@ -1,11 +1,11 @@
-import { Item } from "./item";
+import Item from "@/components/molecules/item";
 import { useEffect } from "react";
 import useCategoriesStore from "@/stores/useCategoriesStore";
 import useItemImagesStore from "@/stores/useItemImagesStore";
 import useItemStore from "@/stores/useItemStore";
 import useSubCategoryStore from "@/stores/useSubCategoryStore";
 
-export default function ItemList() {
+const ItemList = () => {
   const { items, fetchItems } = useItemStore();
   const { categories, fetchCategories } = useCategoriesStore();
   const { itemImages, fetchItemImages } = useItemImagesStore();
@@ -27,7 +27,7 @@ export default function ItemList() {
   }, [fetchItems, fetchCategories, fetchItemImages, fetchSubCategories]);
 
   return (
-    <div className="flex gap-2 justify-start flex-wrap px-5 mt-3">
+    <div className="flex gap-1 justify-center flex-wrap px-6 mt-3">
       {items.map((item) => {
         const itemCategory = categories.find(
           (category) => category.id === item.category_id
@@ -40,7 +40,6 @@ export default function ItemList() {
         const images = itemImages.filter((image) => image.items_id === item.id);
 
         const firstImage = images.length > 0 ? images[0].image_url : "";
-
         if (!itemCategory || !itemImages) return;
 
         return (
@@ -55,4 +54,6 @@ export default function ItemList() {
       })}
     </div>
   );
-}
+};
+
+export default ItemList;
